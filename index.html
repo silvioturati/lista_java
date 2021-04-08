@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Lista de Convidados</title>
+  </head>
+  <body>
+    <div id="app">
+      <h1>Lista de Convidados</h1>
+      <ul id="lista"></ul>
+
+      <input id="campo" type="text" placeholder="Digite o nome do convidado" />
+      <button type="button" id="botao">Cadastrar</button>
+    </div>
+
+    <script type="text/javascript" charset="utf-8">
+
+      // array onde serão armazenados os nomes. Busca no localStorage o arquivo e transforma de JSON para ARRAY ou (||) cria um array em branco caso seja a primeira execução
+      var convidados = JSON.parse(localStorage.getItem("convidados")) || [];
+
+      var elLista = document.getElementById("lista");
+      var elBotao = document.getElementById("botao");
+      var elCampo = document.getElementById("campo");
+
+      elBotao.onclick = function() {                                              // função cadastrar
+        var varNome = elCampo.value;
+        convidados.push( {nome: varNome} );                                       // carregando o nome no array no formato de elemento
+        alert("Cadastrado");
+        elCampo.value = "";
+        salvarConvidados();
+        listarConvidados();
+      };
+
+      function salvarConvidados() {                                               // utiliza o localstorage do navegador
+        localStorage.setItem("convidados", JSON.stringify(convidados));           // pega o ARRAY transforma num arquivo JSON e salva no localStorage
+      };
+
+      function listarConvidados() {                                               // processo de renderização da li no navegador
+        elLista.innerHTML = "";                                                   // limpando a li no navegador
+
+        for (const convidado of convidados) {
+          var elConvidado = document.createElement('li');                         // criando o elemento <li></li>
+          var elNome = document.createTextNode(convidado.nome);                   // criando o texto do <li>texto</li>, que vai receber o nome do array
+          var elExcluir = document.createElement("a");                            // criando o elemento tipo <a></a>
+          elExcluir.setAttribute("href", "#");                                    // setanto o atributo no elemento <a href="#"></a>
+
+          elExcluir.onclick = function() {                                        // função excluir
+              convidados = convidados.filter(function(item) {
+                  return item.nome !== convidado.nome;
+              });
+              salvarConvidados();
+              listarConvidados();
+          };
+
+          var elExcluirTexto = document.createTextNode("Excluir");                // criando o texto que vai dentro do elemento tipo <a href="#">Texto</a>
+          elExcluir.appendChild(elExcluirTexto);                                  // colocando o texto dentro do elemento <a href="#">Excluir</a>
+          elConvidado.appendChild(elNome);                                        // colocando o texto dentro do <li>convidado.nome</li>
+          elConvidado.appendChild(elExcluir);                                     // colocando o texto dentro do <li>convidado nome<a href="#">Excluir</a></li>
+          elLista.appendChild(elConvidado);                                       // colocando o li dentro da <ul><li>convidado nome<a href="#">Excluir</a></li></ul>
+        }
+      }
+
+      listarConvidados();
+    </script>
+  </body>
+</html>
